@@ -23,7 +23,7 @@ void headTracing() {
   /*前进的情况 */
   //1111 1111
   if(HD[0] && HD[1] && HD[2] && HD[3] && HD[4] && HD[5] && HD[6] && HD[7]) {
-    MyMotor.motorRun(STOP);
+    MyMotor.motorRun(FORWARD);
   }
   
   //0000 0000

@@ -15,13 +15,20 @@
 #define TURNLEFTLITTLE 6
 
 
+#define bigServo 0
+#define smallServo 1
+#define buttomServo 2
+
 Adafruit_ssd1306syp display(SDA_PIN,SCL_PIN);
 
 //const int RearTrace[5] = {30, 31, 32, 33, 34};                    //车尾循迹
 const int SideTrace[2] = {35, 36};                            //侧边循迹，从前到后
 const int RearTrace = 37;
 
-const int E18Pin = 8;
+//const int E18Pin = ;  避障
+
+const int bigMotor = 7;
+const int smallMotor = 8;
 
 Servo MyServo[3];                                               //机械臂舵机
 Servo platform;
@@ -34,8 +41,11 @@ void setup() {
 
   display.initialize();
   
-  pinMode(E18Pin, INPUT);
+//  pinMode(E18Pin, INPUT);
 
+  pinMode(bigMotor, OUTPUT);
+  pinMode(smallMotor, OUTPUT);
+  
   for(i = 0; i < 8; i++) {
     pinMode(HeadTrace[i], INPUT);
   }
@@ -50,14 +60,14 @@ pinMode(RearTrace, INPUT);
     pinMode(SideTrace[i], INPUT);
   }
 
-  MyServo[0].attach(50);
-  MyServo[1].attach(51);
-  MyServo[2].attach(52);
+  MyServo[bigServo].attach(50);
+  MyServo[smallServo].attach(51);
+  MyServo[buttomServo].attach(52);
   platform.attach(53);
   
-  MyServo[0].write(120);
-  MyServo[1].write(180);
-  MyServo[2].write(50);
+  MyServo[bigServo].write(80);
+  MyServo[smallServo].write(180);
+  MyServo[buttomServo].write(50);
   platform.write(110);
   
   oledShow();
@@ -74,15 +84,26 @@ void oledShow()
   display.update();
 }
 
+void inhale(){
+  analogWrite(bigMotor, 200);
+  analogWrite(smallMotor, 40);
+}
+
+void deflate() {
+  analogWrite(bigMotor, 40);
+  analogWrite(smallMotor, 200);  
+}
+
 void armTest() {
-  servoMove(0, 120, 170, 20);
-  servoMove(0, 170, 120, 20);
+  servoMove(bigServo, 80, 110, 20);
+  servoMove(bigServo, 110, 80, 20);
+  inhale();
+  servoMove(smallServo, 180, 160, 20);
+  servoMove(smallServo, 160, 180, 20);
 
-  servoMove(1, 180, 160, 20);
-  servoMove(1, 160, 180, 20);
-
-  servoMove(2, 50, 0, 20);
-  servoMove(2, 0, 50, 20);
+  servoMove(buttomServo, 50, 0, 20);
+  servoMove(buttomServo, 0, 50, 20);
+  
 }
 
 void servoMove(int _which, int _start, int _finish, long _time) {
@@ -94,7 +115,7 @@ void servoMove(int _which, int _start, int _finish, long _time) {
   else
     Direct = -1;
   Diff = abs(_finish - _start);
-  //DeltaTime = (long)(t / Diff);
+  
   DeltaTime = _time;
   for (int i = 0; i < Diff; i++)
   {
@@ -104,6 +125,7 @@ void servoMove(int _which, int _start, int _finish, long _time) {
 }
 
 void loop() {
+
   headTracing();
   
   
@@ -119,7 +141,7 @@ void loop() {
       MyMotor.motorRun(FORWARD);
       delay(500);
    }
-/*
+  /*
    if(SideD[0] && RearD) {
       MyMotor.motorRun(STOP);
       delay(3000);
@@ -130,5 +152,7 @@ void loop() {
       MyMotor.motorRun(STOP);
       delay(3000);
       
-   }*/
+   }
+  */ 
+
 } 

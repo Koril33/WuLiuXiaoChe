@@ -74,8 +74,8 @@ void Motor::motorRun(int command) {
         
         
         case FORWARD:
-        analogWrite(_pwm1, 40);
-        analogWrite(_pwm2, 40);
+        analogWrite(_pwm1, 33);
+        analogWrite(_pwm2, 41);
         digitalWrite(_input1, LOW);
         digitalWrite(_input2, HIGH);
         digitalWrite(_input3, LOW);
