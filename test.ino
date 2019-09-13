@@ -1,3 +1,4 @@
+#include <Pixy2.h>
 #include <Servo.h>
 #include "Motor.h"
 #include "headTracing.h"
@@ -33,6 +34,7 @@
 
 Adafruit_ssd1306syp display(SDA_PIN,SCL_PIN);
 
+Pixy2 pixy;
 
 const int SideTrace[2] = {35, 36};                            //侧边循迹，从前到后
 const int RearTrace = 37;
@@ -59,6 +61,8 @@ void setup() {
 
   Serial.begin(9600);
 
+  pixy.init();
+  
   display.initialize();
   
 //  pinMode(E18Pin, INPUT);
@@ -85,9 +89,9 @@ pinMode(RearTrace, INPUT);
 /*******************
  * 连接四个舵机和引脚
 *******************/
-  MyServo[bigServo].attach(50);
-  MyServo[smallServo].attach(51);
-  MyServo[buttomServo].attach(52);
+  MyServo[bigServo].attach(A0);
+  MyServo[smallServo].attach(A1);
+  MyServo[buttomServo].attach(A2);
   platform.attach(53);
   
 /*******************
@@ -183,7 +187,10 @@ void loop() {
   if(SideD[0] && SideD[1]) {
       MyMotor.motorRun(STOP);
       delay(3000);
-      armCatch();
+      pixy.ccc.getBlocks();
+      if(pixy.ccc.numBlocks) {
+        armCatch();
+      }
       MyMotor.motorRun(FORWARD);
       delay(500);
    }
