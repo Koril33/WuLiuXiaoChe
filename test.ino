@@ -1,15 +1,7 @@
-#include <Pixy2.h>
 #include <Servo.h>
 #include "Motor.h"
 #include "headTracing.h"
 #include <Adafruit_ssd1306syp.h>
-
-/*******************
- * OLED的SDA和SCL引脚
-*******************/
-#define SDA_PIN 20
-#define SCL_PIN 21
-
 
 /*******************
  * 电机运行动作
@@ -22,19 +14,9 @@
 #define TURNRIGHTLITTLE 5
 #define TURNLEFTLITTLE 6
 
-/*******************
- * 机械臂储存在size为3的数组
- * Myservo[0]--大臂舵机
- * Myservo[1]--小臂舵机
- * Myservo[2]--底部转盘舵机
-*******************/
 #define bigServo 0
 #define smallServo 1
 #define buttomServo 2
-
-Adafruit_ssd1306syp display(SDA_PIN,SCL_PIN);
-
-Pixy2 pixy;
 
 const int SideTrace[2] = {35, 36};                            //侧边循迹，从前到后
 const int RearTrace = 37;
@@ -61,10 +43,6 @@ void setup() {
 
   Serial.begin(9600);
 
-  pixy.init();
-  
-  display.initialize();
-  
 //  pinMode(E18Pin, INPUT);
 
 /*******************
@@ -102,21 +80,8 @@ pinMode(RearTrace, INPUT);
   MyServo[buttomServo].write(50);
   platform.write(110);
   
-  oledShow();
   delay(3000);
   platform.write(170);
-}
-
-/*******************
- * OLED显示"Hello, world!"
-*******************/
-void oledShow()
-{
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("Hello, world!");
-  display.update();
 }
 
 /*******************
@@ -174,38 +139,83 @@ void servoMove(int _which, int _start, int _finish, long _time) {
   }
 }
 
-void loop() {
 
+int flag = 0;
+
+void loop() {
+/*
+while(flag == 0) {
+  for(i = 0; i < 2; i++) {
+    SideD[i] = digitalRead(SideTrace[i]);
+  }
+  headTracing();
+  if(SideD[0] && SideD[1] && HD[6] && HD[7]) {
+      MyMotor.motorRun(STOP);
+      delay(3000);
+      armCatch();
+      MyMotor.motorRun(FORWARD);
+      delay(500);
+      flag = 1;    
+  }  
+}
+
+while(flag = 1) {
+  headTracing();
+  if(HD[0] && HD[1] && HD[2] && HD[3] && HD[4] && HD[5] && HD[6] && HD[7]) {
+    flag = 2;
+  }
+}
+
+while(flag = 2) {
+  MyMotor.motorRun(STOP);
+  delay(1000);
+  MyMotor.motorRun(FORWARD);
+  delay(1000);
+  MyMotor.motorRun(STOP);
+  delay(1000);  
+  flag = 3;
+}
+
+while(flag = 3) {
+  headTracing();
+  if(SideD[0] && SideD[1] && HD[6] && HD[7]) {
+      MyMotor.motorRun(STOP);
+      delay(3000);
+      armCatch();
+      MyMotor.motorRun(FORWARD);
+      delay(500);
+      flag = 4;    
+  }  
+}
+
+while(flag = 4) {
+  headTracing();
+
+  if(HD[0] && HD[1] && HD[2] && HD[3] && HD[4] && HD[5] && HD[6] && HD[7]) {
+    while(1) {
+      MyMotor.motorRun(STOP);
+    }
+  }  
+}
+
+*/
   headTracing();
   
   
   for(i = 0; i < 2; i++) {
     SideD[i] = digitalRead(SideTrace[i]);
   }
-  RearD = digitalRead(RearTrace);
-  
-  if(SideD[0] && SideD[1]) {
-      MyMotor.motorRun(STOP);
-      delay(3000);
-      pixy.ccc.getBlocks();
-      if(pixy.ccc.numBlocks) {
-        armCatch();
-      }
-      MyMotor.motorRun(FORWARD);
-      delay(500);
-   }
-  /*
-   if(SideD[0] && RearD) {
-      MyMotor.motorRun(STOP);
-      delay(3000);
-      
-      MyMotor.motorRun(FORWARD);
-      delay(500);
 
+  
+  
+  if(SideD[0] && SideD[1] && HD[6] && HD[7]) {
       MyMotor.motorRun(STOP);
       delay(3000);
-      
+      armCatch();
+      MyMotor.motorRun(FORWARD);
+      delay(500);
    }
-  */ 
+  
+  
 
 } 
